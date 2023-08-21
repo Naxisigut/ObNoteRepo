@@ -21,6 +21,14 @@ created () {
   this.getExtFieldsHandler() // 初始化扩展字段
   // ...
 },
+
+methods: {
+  getExtFieldsHandler(){
+    newExtFieldsHandler(this.tableCode, 3).then((res) => {
+      this.extFieldsHandler = res
+    })
+  },
+}
 ```
 
 ## Template
@@ -79,6 +87,7 @@ queryPOUnreceivingTable () {
 - 有两种情况：
 	1. 手动赋值添加的数据，没有初始的ExtFields字段，可以在原有赋值结果的基础上调用initRow方法并重新赋值
 	2. 从其它表格引入的数据，有自身的ExtFields字段，则需要调用transferList方法并带入数据中原有的赋值
+	3. 若不需要带入源数据的值，则不用给transferList的第二个参数
 
 ```js
 // 情况一
