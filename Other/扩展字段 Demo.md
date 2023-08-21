@@ -1,43 +1,25 @@
-- 构建一个extFieldsHandler类实例，一个实例对应一个表格。
+- 构建一个ExtFieldsHandler类实例，一个实例对应一个表格。
 - 通过这个实例，对数据的扩展字段进行展开、回写等操作，完成数据显示、保存等功能
 ## 引入
-- 引入：
 ```js
-import { ExtFieldsHandler } from '@/utils/extFields.js';
+import { newExtFieldsHandler } from '@/utils/extFields.js';
 
 data(){
-	extFieldsHandler: {} // 扩展字段
+	extFieldsHandler: {}, // 扩展字段
+	extBusinessType: 2, // 扩展字段业务type 销售发货单：2
 }
 ```
 
 ## 构建
-- extFieldsHandler类实例只有一个属性extFields，即当前表格的扩展字段
-- 构建时传入表格表头，会自动抓取其中的扩展字段
-- 所以构建的时机是在获取表格表头之后，一般就是this.allDataObj.TableFields，或者this.allDataObj.TableFields
+- extFieldsHandler类实例只有一个属性extFields，即当前表格的扩展字段， 在构建时需要传入表格对应的extFields
+- 表格对应的extFields通过给GetInitialExtFieldByTableCode接口传参tableCode获取
+- 构建时机是在进入页面后的created生命周期内， 越早越好
 
-详情：
 ```js
-//获取表格是否显示/编辑
-    querySalesOrderDetailProductFieldProperty (e) {
-      getSalesOrderDetailProductFieldProperty(this.orderId).then(res => {
-        // ...
-        this.allDataObj.TableFields = e;
-        this.extFieldsHandler = new ExtFieldsHandler(e) // 初始化扩展字段
-		// ...
-    },
-```
-
-查询：
-```js
-//获取form查询表单和table表头数据
-queryCustamTable() {
-	// ...
-	this.allDataObj = res.data.entity;
-	this.$set(this.allDataObj, "TableFields", res.data.entity.TableFields );
-	this.$set( this.allDataObj, "SearchFormFields", res.data.entity.SearchFormFields );
-	this.extFieldsHandler = new ExtFieldsHandler(this.allDataObj.TableFields) // 初始化扩展字段
-	this.queryPOUnreceivingTable();
-	// ...
+created () {
+  // ...
+  this.getExtFieldsHandler() // 初始化扩展字段
+  // ...
 },
 ```
 
@@ -48,25 +30,27 @@ queryCustamTable() {
 
 详情：
 ```html
-<gyl-table :tableData="tableData" :tableCol="allDataObj.TableFields" :sortStatus="false" :checkedStatus="true" @updateSelectList="updateSelectList" :totalSum="totalSum" :totalStatus="true" :isSortable="false" class="orderInfo_table" ref="orderInfoTable">
+<gyl-table>
 	<!-- ... -->
 	<!-- 扩展字段 -->
-	<template v-for="ext in extFieldsHandler.extFields" :slot="ext.FieldCode" slot-scope="scope">
-		<el-input v-if="tableInpuData[ext.FieldCode] && tableInpuData[ext.FieldCode].IsEdit" v-model="scope.data.row[ext.FieldCode]" class="tableCusInput" v-direction:a="{x: scope.index, y: scope.data.$index }">
-		</el-input>
-		<span v-else>{{ scope.data.row.AuxiliaryAmount }}</span>
-	</template>
+	<template v-for="ext in extFieldsHandler.extFields" :slot="ext.Code" slot-scope="scope">
+    <div :key="ext.Code">
+      <el-input v-if="tableInpuData[ext.Code] && tableInpuData[ext.Code].IsEdit" v-model="scope.data.row[ext.Code]" class="tableCusInput" v-direction:a="{x: scope.index, y: scope.data.$index }">
+      </el-input>
+      <span v-else>{{ scope.data.row[ext.Code] }}</span>
+    </div>
+  </template>
 	<!-- ... -->
 </gyl-table>
 ```
 
 查询：
 ```HTML
-<gyl-table :tableData="tableData" :tableCol="allDataObj.TableFields" :sortStatus="false" :checkedStatus="true" @updateSelectList="updateSelectList" :totalSum="totalSum" :totalStatus="true" :isSortable="false" class="orderInfo_table" ref="orderInfoTable">
+<gyl-table>
 	<!-- ... -->
 	<!-- 扩展字段 -->
-	<template v-for="ext in extFieldsHandler.extFields" :slot="ext.FieldCode" slot-scope="scope">
-		<span :key="ext.FieldCode" >{{ scope.data.row[ext.FieldCode] }}</span>
+	<template v-for="ext in extFieldsHandler.extFields" :slot="ext.Code" slot-scope="scope">
+		<span :key="ext.Code" >{{ scope.data.row[ext.Code] }}</span>
 	</template>
 	<!-- ... -->
 </gyl-table>
@@ -79,21 +63,22 @@ queryCustamTable() {
 queryPOUnreceivingTable () {
 	// ...
 	if (res.data.success) {
-	  this.tableData = res.data.entity.PageList.data;
-        if (this.searFormData.OrderId > 0) {
-		  // ...
-          this.tableData = this.extFieldsHandler.extendList(this.tableData)
-          this.queryTotalSum();
-        }
-	}
-	// ...
+    this.tableData = res.data.entity.PageList.data;
+	  if (this.searFormData.OrderId > 0) {
+	    // ...
+      this.tableData = this.extFieldsHandler.extendList(this.tableData)
+      this.queryTotalSum();
+    }
+  }
+  // ...
 }
 ```
 ## 新增明细
+- 新增明细一般在batchJoin方法里。
 - 新增明细进入表格数据，需要使新增的明细数据与原有的数据在扩展字段的结构上保持一致
 - 有两种情况：
 	1. 手动赋值添加的数据，没有初始的ExtFields字段，可以在原有赋值结果的基础上调用initRow方法并重新赋值
-	2. 从其它表格引入的数据，有自身的ExtFields字段，则可以调用transferList方法并重新赋值
+	2. 从其它表格引入的数据，有自身的ExtFields字段，则需要调用transferList方法并带入数据中原有的赋值
 
 ```js
 // 情况一
@@ -112,16 +97,16 @@ if (this.searFormData.OrderId > 0) {
 ```js
 // 情况二
 batchJoin (e, p, idx) {
-	let msg = false
-	e = this.extFieldsHandler.transferList(e) // **
-	e.forEach(item => {
-		this.tableData.forEach(cIm => {
-			if (item.BrandProductId == cIm.BrandProductId) {
-				msg = true
-	            return false
-		     }
-	     })
-	})
+  let msg = false
+	e = this.extFieldsHandler.transferList(e, {
+    fromBusinessType: 1,
+    toBusinessType: this.extBusinessType  
+  }) // *转换扩展字段*
+	e.forEach((item, index) => {
+    item.AuxiliaryUnit = item.AuxiliaryUnit == 0 ? '' : item.AuxiliaryUnit.toString()
+    this.tableData.push(item);
+  })
+  // ...
 }
 ```
 ## 保存
