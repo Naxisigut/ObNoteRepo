@@ -42,12 +42,12 @@ methods: {
 	<!-- ... -->
 	<!-- 扩展字段 -->
 	<template v-for="ext in extFieldsHandler.extFields" :slot="ext.Code" slot-scope="scope">
-    <div :key="ext.Code">
-      <el-input v-if="tableInpuData[ext.Code] && tableInpuData[ext.Code].IsEdit" v-model="scope.data.row[ext.Code]" class="tableCusInput" v-direction:a="{x: scope.index, y: scope.data.$index }">
-      </el-input>
-      <span v-else>{{ scope.data.row[ext.Code] }}</span>
-    </div>
-  </template>
+    <div :key="ext.Code">
+      <el-input v-if="tableInpuData[ext.Code] && tableInpuData[ext.Code].IsEdit" v-model="scope.data.row[ext.Code]" class="tableCusInput" v-direction:a="{x: scope.index, y: scope.data.$index }">
+      </el-input>
+    <span v-else>{{ scope.data.row[ext.Code] }}</span>
+    </div>
+  </template>
 	<!-- ... -->
 </gyl-table>
 ```
