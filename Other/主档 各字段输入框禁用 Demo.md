@@ -53,7 +53,7 @@ export default {
   mixins: [disableHandlerMixin],
 }
 ```
-#### 使用fileFieldDisableHandler
+#### 使用 fileFieldDisableHandler
 ```html
 <template slot="StockTakingNo" slot-scope="scope">
   <el-input 
