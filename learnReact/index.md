@@ -102,10 +102,23 @@ const p = {
 - props的使用
 ```js
 import React from 'react';
+import PropTypes from 'prop-types';
+
 class MyComponent extends React.Component{
+  static propTypes = { // 注意是小写的propTypes
+    name: PropTypes.string.isRequired, // 限制类型为字符串，必传
+    sex: PropTypes.string,
+    speak: PropTypes.func // 限制类型为函数
+  }
+  static defaultProps = {
+    age: 18 // 限制默认prop值
+  }
   render(){
     const { name, age, sex } = this.props
     ....
   }
 }
+
 ```
+#### 组件的使用：refs
+refs
