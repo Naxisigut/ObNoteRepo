@@ -122,3 +122,16 @@ class MyComponent extends React.Component{
 ```
 #### 组件的使用：refs
 refs
+
+## 其它
+#### html字符串
+使用`dangerouslySetInnerHTML`。
+`dangerouslySetInnerHTML`: 传入一个对象，其__html字段值为html字符串，会被渲染到节点当中
+```tsx
+<div 
+  className="text-with-markdown" 
+  dangerouslySetInnerHTML={{
+    __html: '<p>自定义html</p>'
+  }}
+></div>
+```
