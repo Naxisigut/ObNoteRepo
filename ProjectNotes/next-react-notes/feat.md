@@ -1,9 +1,6 @@
-
-## Feat
-#### md预览
+## MD预览
 `marked`: 解析md文档的字符串为html字符串
 `sanitize-html`: 过滤html字符串，以免引入危险代码
-
 
 ```tsx
 import { marked } from 'marked';
@@ -26,3 +23,6 @@ export default function NotePreview({ children }: {
   )
 };
 ```
+
+## 表单数据校验
+`zod`

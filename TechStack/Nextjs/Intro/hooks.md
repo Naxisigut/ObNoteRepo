@@ -34,3 +34,7 @@ export default function ExampleClientComponent() {
   return <p>Current pathname: {pathname}</p>
 }
 ```
+#### useParams
+返回一个对象，包含当前路径中所有的动态参数。
+#### useSearchParams
+返回一个只读的URLSearchParams对象，可以获取当前路径上所有的query参数。

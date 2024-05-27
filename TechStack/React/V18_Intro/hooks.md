@@ -1,5 +1,6 @@
 ### useTransition
-指定某些状态为低优先级，延后更新
+指定某些状态为低优先级，延后更新。
+可用于输入框输入时防止阻塞。
 ```tsx
 import { useTransition, useState } from 'react';
 
@@ -142,3 +143,6 @@ export default function Father() {
 ```
 
 ### useEffect
+
+### useFormStatus
+### useFormState
