@@ -6,7 +6,7 @@
 显示值为输入框当前所显示的值，下面显示值以ViewValue代替
 ViewValue与element.value并不绝对相等。
 
-element.value
+element.value  
 1. 字符串。
 2. ViewValue以小数点结尾时，小数点会被忽略。
 3. ViewValue整体不合法时为空字符串。
