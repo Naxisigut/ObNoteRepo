@@ -30,7 +30,9 @@
   width: 100%;
   box-sizing: border-box;
   .scroll-view-item-wrapper{
-    width: fit-content; // 关键代码，使得宽度=item总宽=scrollview宽度，最右的padding可以正常展示
+    // 关键代码，使得宽度=item总宽=scrollview宽度，最右的padding可以正常展示
+    // 不能使用fit-content,在安卓支付宝环境下不生效;max-content兼容性更佳
+    width: max-content; 
     box-sizing: border-box;
     display: flex;
     gap: 30rpx;
@@ -43,6 +45,9 @@
     line-height: 100rpx;
     border: 1rpx solid #E5E5E5;
     width: 200rpx; // 可以不指定，由内容自动撑开；指定时也不会被flex压缩
+    // 防止安卓支付宝环境下文字被挤成一列
+    flex-shrink: 0; 
+    text-wrap: nowrap;
   }
 }
 ```
